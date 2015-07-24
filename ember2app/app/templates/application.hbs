@@ -1,8 +1,8 @@
 <h2 id="title">Welcome to Ember.js and JWT authentication</h2>
 
-{{#if session.jwt}}
+{{#if isLogged}}
   <p> You are logged in </p>
-  // <p><button {{action "logout"}}>Logout</button></p>
+  <p><button {{action "logout"}}>Logout</button></p>
 {{else}}
   <p>{{#link-to "login" tagName="button"}}Login{{/link-to}}</p>
 {{/if}}
