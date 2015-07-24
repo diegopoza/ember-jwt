@@ -1,0 +1,13 @@
+{{#if loginFailed}}
+  <div class="alert">Invalid username or password.</div>
+{{/if}}
+
+<label>
+  Username:
+  {{input value=username}} 
+</label>
+<label>
+  Password:
+  {{input type="password" value=password}}
+</label>
+<button {{action 'login'}} disabled={{isProcessing}}>Login</button>
