@@ -1,26 +1,15 @@
 import Ember from 'ember';
+import LoginControllerMixin from 'simple-auth/mixins/login-controller-mixin';
 
-export default Ember.Controller.extend({
-    loginFailed: false,
-    isProcessing: false,
+export default Ember.Controller.extend(LoginControllerMixin, {
+    authenticator: 'authenticator:custom',
     actions: {
-        login: function() {
-            this.setProperties({
-                loginFailed: false,
-                isProcessing: true
+        authenticate: function() {
+            var self = this;
+            var credentials = this.getProperties('identification', 'password');
+            this.get('session').authenticate('authenticator:custom', credentials).then(null, function(message) {
+                self.set('errorMessage', message);
             });
-            Ember.$.post("http://localhost:3001/sessions/create", {
-                    username: this.get("username"),
-                    password: this.get("password")
-                })
-                .then(function(data) {
-                    this.set("isProcessing", false);
-                    var jwt = data.id_token;
-                    localStorage.setItem('jwt', jwt);
-                    this.target.transitionTo('index');
-                }.bind(this), function() {
-                    this.set("isProcessing", false);
-                }.bind(this));
         }
     }
 });

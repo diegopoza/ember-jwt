@@ -16,7 +16,22 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+    },
+    contentSecurityPolicy: {
+      'default-src': "'none'",
+      'script-src': "'self'",
+      'font-src': "'self' http://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/", 
+      'connect-src': "'self' http://localhost:3001", // Allow data (ajax/websocket) from http://localhost:3001
+      'img-src': "'self'",
+      'style-src': "'self' 'unsafe-inline' http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/", // Allow inline styles 
+      'media-src': "'self'"
     }
+  };
+
+  ENV['simple-auth'] = {
+    store: 'simple-auth-session-store:local-storage',
+    authorizer: 'authorizer:custom',
+    routeAfterAuthentication: '/protected'
   };
 
   if (environment === 'development') {
