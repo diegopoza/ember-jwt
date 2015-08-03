@@ -5,7 +5,9 @@ The idea of this post is to show a very simple Ember 2.0 application that uses J
 ## What is Ember 2.0?
 Ember is an MVC flavored framework, but in its 2.0 version this has changed to a components oriented approach, as you can see in the following image.
 
-[INSERT IMAGE]
+![ember evolution](Images/ember paradigm.PNG?raw=true)
+
+_Ember evolution: from 1.x to 2.0_
 
 Ember 2.0 does not introduce any new feature, as those features (Glimmer rendering engine, new computed syntax, HTML-style component invocation, and so on) are already in previous versions of Ember. In fact the dev team states that Ember latest stable release, v1.13, is Ember 2.0 in disguise. You have to take into account that those features deprecated in v1.x versions will be removed from 2.0.
 
@@ -51,6 +53,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 We will take advantage of the methods mentioned before to display login/logout buttons depending on the session's authentication state. This is done in the application template.
 
 ````JavaScript
+// app/templates/application.hbs
 {{#if session.isAuthenticated}}
   <p><a {{ action 'invalidateSession' }}>Logout</a></p>
 {{else}}
@@ -69,7 +72,7 @@ import AuthenticatedRouteMixin from 'simple-auth/mixins/authenticated-route-mixi
 export default Ember.Route.extend(AuthenticatedRouteMixin, {  
 }); 
 ````
-Lastly, there is the 
+Lastly, there is the **LoginControllerMixin**
 
 Components
 
