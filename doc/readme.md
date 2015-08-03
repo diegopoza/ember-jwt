@@ -1,6 +1,6 @@
 ﻿<a name="anchor-name-here" />
 # Ember 2.0 with JWT auth #
-The idea of this post is to show a very simple Ember 2.0 application that uses Json Web Tokens (JWT) to authenticate to a protected API.
+The idea of this post is to show a very simple Ember 2.0 application that uses JSON Web Tokens (JWT) to authenticate to a protected API.
 
 ## What is Ember 2.0?
 Ember is an MVC flavored framework, but in its 2.0 version this has changed to a components oriented approach, as you can see in the following image.
@@ -21,7 +21,7 @@ Once you created your ember application with ember-cli, edit the _bower.json_ fi
 ## Creating a simple app that uses JWT
 Our simple app will consist of a login form, and a page that shows a random quote obtained by calling the protected API. The server that will authenticate us and provide the secured API we will call, is Auth0's  [**NodeJS JWT Authentication Sample**](https://github.com/auth0/nodejs-jwt-authentication-sample).
 
-Our app wil have two routes: one for the login form and one for the one that shows the quote, as you can see in the following code.
+Our app will have two routes: one for the login form and one for the one that shows the quote, as you can see in the following code.
 
 ````JavaScript
 // router.js
@@ -31,7 +31,7 @@ Router.map(function() {
 });
 ````
 
-To work with JWT we will utilize a very useful plugin called **Ember Simple Auth** that can be downloaded from [here](http://ember-simple-auth.com/). Follow the _how to use it_ instructions in the site to install it.This plugin will help us protect the routes as well as creating code to authenticate and authorize request.
+To work with JWT we will utilize a very useful plugin called **Ember Simple Auth** that can be downloaded from [here](http://ember-simple-auth.com/). Follow the _how to use it_ instructions in the site to install it. This plugin will help us protect the routes as well as creating code to authenticate and authorize request.
 
 On the application route, we will use the **ApplicationRouteMixin** which will create an application session and provide actions for authenticating or invalidating the session. You can see the application route code below, which has the **invalidate** action code.
 
