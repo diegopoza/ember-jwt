@@ -1,6 +1,6 @@
 import Ember from 'ember';
 export default Ember.Controller.extend({
-    gotQuote: false,
+    gotQuote: false, 
     quote: "",
     actions: {
         getQuote: function() {
@@ -8,13 +8,6 @@ export default Ember.Controller.extend({
             Ember.$.ajax({
                 type: 'GET',
                 url: 'http://localhost:3001/api/protected/random-quote',
-                beforeSend: function(xhr) {
-                    // set header if JWT is set
-                    var token = that.get('session.secure.token');
-                    if (token) {
-                        xhr.setRequestHeader("Authorization", "Bearer " + token);
-                    }
-                },
                 success: function(response) {
                     that.setProperties({
                         quote: response,

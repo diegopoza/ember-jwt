@@ -24,7 +24,7 @@ Once you created your ember application with ember-cli, edit the _bower.json_ fi
 Our simple app will consist of a login form, and a page that shows a random quote obtained by calling the protected API. The server that will authenticate us and provide the secured API we will call, is Auth0's  [**NodeJS JWT Authentication Sample**](https://github.com/auth0/nodejs-jwt-authentication-sample).
 
 Our app will have two routes: one for the login form and one for the one that shows the quote, as you can see in the following code.
-
+<!-- mark:3-4 -->
 ````JavaScript
 // router.js
 Router.map(function() {
@@ -51,7 +51,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 ````
 
 We will take advantage of the methods mentioned before to display login/logout buttons depending on the session's authentication state. This is done in the application template.
-
+<!-- mark:3,5 -->
 ````JavaScript
 // app/templates/application.hbs
 {{#if session.isAuthenticated}}
@@ -63,7 +63,7 @@ We will take advantage of the methods mentioned before to display login/logout b
 ````
 
 Ember Simple Auth also provides the **AuthenticatedRouteMixin** mixin, to secure the routes that are only available when the user is authenticated. In our case it is the _protected_ route, as you can see below. If not authenticated it will trigger a redirection to the login route.
-
+<!-- mark:3-6 -->
 ````JavaScript
 // app/routes/protected.js
 import Ember from 'ember';
@@ -72,8 +72,84 @@ import AuthenticatedRouteMixin from 'simple-auth/mixins/authenticated-route-mixi
 export default Ember.Route.extend(AuthenticatedRouteMixin, {  
 }); 
 ````
-Lastly, there is the **LoginControllerMixin**
+Lastly, there is the **LoginControllerMixin** that allows you to specify the controller that will perform the login process.
+<!-- mark:3-6 -->
+````JavaScript
+// app/controllers/login.js
+import Ember from 'ember';
+import LoginControllerMixin from 'simple-auth/mixins/login-controller-mixin';
+
+export default Ember.Controller.extend(LoginControllerMixin, {
+});
+````
+From here two new concepts arise: **Athenticators** & **Authorizators**.
+Authenticators implement the logic necessary to authenticate the session. You can have one authenticator per authentication mechanism / provider you have. Authorizers on the other hand, uses the secret information adquired by the authenticator to authorize subsequent requests. 
+
+You can see our custom implementations below:
+
+````JavaScript
+import Ember from 'ember';
+import Base from 'simple-auth/authenticators/base';
+
+export default Base.extend({
+  tokenEndpoint: 'http://localhost:3001/sessions/create',
+  restore: function(data) {
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      if (!Ember.isEmpty(data.session_name)) {
+        resolve(data);
+      }
+      else {
+        reject();
+      }
+    });
+  },
+
+  authenticate: function(options) { 
+    return new Ember.RSVP.Promise(function(resolve, reject) { 
+    Ember.$.ajax({ 
+      url: tokenEndpoint, 
+      type: 'POST', 
+      data: JSON.stringify({
+          username: options.identification,
+          password: options.password
+      }),
+      contentType: 'application/json;charset=utf-8',
+      dataType: 'json' 
+    }).then(function(response) { 
+      Ember.run(function() { 
+        resolve({ token: response.id_token }); 
+      }); 
+    }, function(xhr, status, error) { 
+      var response = JSON.parse(xhr.responseText); 
+      Ember.run(function() { 
+        reject(response.error); 
+      }); 
+    }); 
+  }); 
+}, 
+
+  invalidate: function() {
+    console.log('invalidate...');
+    return Ember.RSVP.resolve();
+  }
+});
+````
+
+````JavaScript
+// app/authorizators/custom.js
+import Ember from 'ember';
+import Base from 'simple-auth/authorizers/base';
+
+export default Base.extend({
+    authorize: function(jqXHR, requestOptions) { 
+        var accessToken = this.get('session.content.token');
+    	if (this.get('session.isAuthenticated') && !Ember.isEmpty(accessToken)) {
+      		jqXHR.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+    	} 	
+    } 
+});
+````
+You can see that the **Authenticator** calls the token endpoint with the passed credentials and return the token. In the other hand, the **Authorizator**, gets the saved token and add the Authorization header in each Ajax call.
 
 Components
 
-Authenticators y Authorizators?

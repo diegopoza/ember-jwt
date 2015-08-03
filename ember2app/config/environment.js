@@ -20,10 +20,10 @@ module.exports = function(environment) {
     contentSecurityPolicy: {
       'default-src': "'none'",
       'script-src': "'self'",
-      'font-src': "'self' http://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/", 
+      'font-src': "'self' https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/", 
       'connect-src': "'self' http://localhost:3001", // Allow data (ajax/websocket) from http://localhost:3001
       'img-src': "'self'",
-      'style-src': "'self' 'unsafe-inline' http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/", // Allow inline styles 
+      'style-src': "'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/", // Allow inline styles 
       'media-src': "'self'"
     }
   };
@@ -31,6 +31,7 @@ module.exports = function(environment) {
   ENV['simple-auth'] = {
     store: 'simple-auth-session-store:local-storage',
     authorizer: 'authorizer:custom',
+    crossOriginWhitelist: ['http://localhost:3001/'],
     routeAfterAuthentication: '/protected'
   };
 
