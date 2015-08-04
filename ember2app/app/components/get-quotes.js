@@ -1,6 +1,6 @@
 import Ember from 'ember';
-export default Ember.Controller.extend({
-    gotQuote: false, 
+export default Ember.Component.extend({
+    gotQuote: false,
     quote: "",
     actions: {
         getQuote: function() {
