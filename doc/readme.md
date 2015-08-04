@@ -1,6 +1,6 @@
 ﻿<a name="anchor-name-here" />
 # Ember 2.0 with JWT auth #
-The purpose of this post is to show a very simple Ember 2.0 application that uses JSON Web Tokens (JWT) to authenticate to a protected API.
+The purpose of this post is to show a very simple Ember 2.0 application that uses JSON Web Tokens (JWT) to authenticate to a protected API. You can get the sample app from [this GitHub repository](https://github.com/diegopoza/ember-jwt).
 
 ## What is Ember 2.0?
 Ember is an MVC flavored framework, but in its 2.0 version this has changed to a components oriented approach, as you can see in the following image.
@@ -226,7 +226,7 @@ Notice that the component logic is practically the same as what you would put in
 
 > **Note**: In the future Ember 2.1, the dev team is planning to add [**Routable components**](https://github.com/emberjs/rfcs/blob/master/text/0015-the-road-to-ember-2-0.md#routeable-components), which will simplify the way in which a route can simple redirect to a component instead of a view.
 
-### Closing Comments
+### Summarizing
 
 The following image summarizes the application flow:
 
