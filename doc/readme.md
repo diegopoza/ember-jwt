@@ -236,7 +236,7 @@ _Application flow_
 
 When successfully logging in, the session is created and the Authenticator stores the JWT in local storage. Whenever generating an AJAX request to the app or to the any whitelisted origin, such as the JWT server, the authentication header with the JWT will be appended by the authorizer, validating all subsequent requests to the the Authentication Sample server.
 
-![Getting random quotes](Images/getting-random-quotes.png?raw=true)
+![Application demo](Images/appdemo.gif?raw=true)
 
 _Getting random quotes from the protected API_
 
