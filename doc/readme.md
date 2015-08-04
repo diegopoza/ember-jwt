@@ -1,6 +1,6 @@
 ﻿<a name="anchor-name-here" />
 # Ember 2.0 with JWT auth #
-The idea of this post is to show a very simple Ember 2.0 application that uses JSON Web Tokens (JWT) to authenticate to a protected API.
+The purpose of this post is to show a very simple Ember 2.0 application that uses JSON Web Tokens (JWT) to authenticate to a protected API.
 
 ## What is Ember 2.0?
 Ember is an MVC flavored framework, but in its 2.0 version this has changed to a components oriented approach, as you can see in the following image.
@@ -9,7 +9,7 @@ Ember is an MVC flavored framework, but in its 2.0 version this has changed to a
 
 _Ember evolution: from 1.x to 2.0_
 
-Ember 2.0 does not introduce any new feature, as those features (Glimmer rendering engine, new computed syntax, HTML-style component invocation, and so on) are already in previous versions of Ember. In fact the dev team states that Ember latest stable release, v1.13, is Ember 2.0 in disguise. You have to take into account that those features deprecated in v1.x versions will be removed from 2.0.
+Ember 2.0 does not introduce any new feature, as those features (Glimmer rendering engine, new computed syntax, HTML-style component invocation, and more) are already in previous versions of Ember. In fact the dev team states that Ember latest stable release v1.13, is Ember 2.0 in disguise. You have to take into account that those features deprecated in v1.x versions will be removed from 2.0.
 
 This means that if you manage to create a v1.13 application with no deprecation warnings, then migrating to 2.0 will be straightforward as there will not be breaking changes.
 
@@ -88,6 +88,7 @@ Authenticators implement the logic necessary to authenticate the session. You ca
 You can see our custom implementations below:
 
 ````JavaScript
+// app/authenticators/custom.js
 import Ember from 'ember';
 import Base from 'simple-auth/authenticators/base';
 
@@ -105,9 +106,10 @@ export default Base.extend({
   },
 
   authenticate: function(options) { 
+    var self = this;
     return new Ember.RSVP.Promise(function(resolve, reject) { 
     Ember.$.ajax({ 
-      url: tokenEndpoint, 
+      url: self.tokenEndpoint, 
       type: 'POST', 
       data: JSON.stringify({
           username: options.identification,
@@ -139,17 +141,51 @@ export default Base.extend({
 // app/authorizators/custom.js
 import Ember from 'ember';
 import Base from 'simple-auth/authorizers/base';
-
 export default Base.extend({
-    authorize: function(jqXHR, requestOptions) { 
-        var accessToken = this.get('session.content.token');
-    	if (this.get('session.isAuthenticated') && !Ember.isEmpty(accessToken)) {
-      		jqXHR.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-    	} 	
-    } 
+    authorize: function(jqXHR, requestOptions) {
+        var accessToken = this.get('session.content.secure.token');
+        if (this.get('session.isAuthenticated') && !Ember.isEmpty(accessToken)) {
+            jqXHR.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        }
+    }
 });
 ````
-You can see that the **Authenticator** calls the token endpoint with the passed credentials and return the token. In the other hand, the **Authorizator**, gets the saved token and add the Authorization header in each Ajax call.
+You can see that the **Authenticator** calls the token endpoint with the passed credentials and return the token, it also has methods to invalidate the session and to restore it. In the other hand, the **Authorizator**, gets the saved token and add the Authorization header in each Ajax call.
 
-Components
+The last important thing you have to take into account about the plugin, is to correctly configure it. To do this, in the environment.js set the desired configuration properties.
 
+- **store**: This specifies where the session state will persist so it survives page reload. In this case is set to use the local storage.
+- **authorizer**: This property specifies the authorizator that will be used. In our case is the custom authorizator.
+- **crossOriginWhitelist**: This is a very important property for our scenario. By default the ember simple auth plugin will not authorize requests going to a different origin than the one the Ember.js application was loaded from. Therefore we have to explicitely enable authorization for additional origins, such as the origin of the NodeJS JWT Authentication Sample.
+- **routeAfterAuthentication**: This property defines the route that the app will redirect to after successful authentication. In our example, that will be the _protected_ route.
+
+You can see the _environment.js_ file for our sample below.
+
+````C#
+// config/environment.js
+...
+ENV['simple-auth'] = {
+    store: 'simple-auth-session-store:local-storage',
+    authorizer: 'authorizer:custom',
+    crossOriginWhitelist: ['http://localhost:3001/'],
+    routeAfterAuthentication: '/protected'
+};
+...
+````
+
+###Components
+As we mentioned at the start of the post, Ember 2.0 approach for creating applications has changed to component driven. Therefore, we created components for our login form view and for the protected view.
+
+Ember components are based on of the [W3C Web Components specification](http://www.w3.org/TR/components-intro), they are views that are completely isolated. Properties accessed in its templates go to the view object and actions are targeted at the view object. There is no access to the surrounding context or outer controller; all contextual information must be passed in. Components should have a well defined interface to the outside world and can broadcast events. You can see a component definition in the following image.
+
+![Component Definition](Images/component-definition.PNG?raw=true)
+
+
+> **Note**: In the future Ember 2.1, the dev team is planning to add [**Routeable components**](https://github.com/emberjs/rfcs/blob/master/text/0015-the-road-to-ember-2-0.md#routeable-components), which will simplify the way in which a route can simple redirect to a component instead of a view.
+
+
+> As a final comment, take into account that you may receive deprecation warnings due to the way that the **Ember Simple Auth** plugin access Ember's container. You can just ignore this warning for the meantime, as we expect that the plugin will be updated when Ember 2.0 is released.
+
+Hope this has been useful to you.
+
+Diego
