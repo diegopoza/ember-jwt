@@ -185,7 +185,7 @@ _Component definition_
 Let's see how the **login-form** component is defined. You can see that the view is defined in the _templates/components/login-form.hbs_ file, and its content is exactly the same as a regular view.
 
 ````HTML
-// templates/components/login-form.hbs
+// app/templates/components/login-form.hbs
 <form {{action 'authenticate' on='submit'}}> 
   <div class="form-group"> 
     <label for="identification">Login</label> 
@@ -206,7 +206,7 @@ Let's see how the **login-form** component is defined. You can see that the view
 Notice the **identification** and **password** values will be passed to the **authenticate** action, which is defined in the component logic, as seen in the following code.
 
 ````JavaScript
-// components/login-form.js
+// app/components/login-form.js
 import Ember from 'ember';
 export default Ember.Component.extend({
     authenticator: 'authenticator:custom',
