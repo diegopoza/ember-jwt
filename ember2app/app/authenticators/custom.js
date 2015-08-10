@@ -12,10 +12,9 @@ export default Base.extend({
         });
     },
     authenticate: function(options) {
-        var self = this;
-        return new Ember.RSVP.Promise(function(resolve, reject) {
+        return new Ember.RSVP.Promise((resolve, reject) => {
             Ember.$.ajax({
-                url: self.tokenEndpoint,
+                url: this.tokenEndpoint,
                 type: 'POST',
                 data: JSON.stringify({
                     username: options.identification,
@@ -30,9 +29,9 @@ export default Base.extend({
                     });
                 });
             }, function(xhr, status, error) {
-                var response = JSON.parse(xhr.responseText);
+                var response = xhr.responseText;
                 Ember.run(function() {
-                    reject(response.error);
+                    reject(response);
                 });
             });
         });
