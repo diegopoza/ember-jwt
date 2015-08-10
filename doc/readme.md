@@ -134,7 +134,7 @@ export default Base.extend({
 });
 ````
 
-> **Note**:  In the **authenticate** function, inside the function in the first **then** statement we are saving the token that comes in the **id_token** property of the response of the server. The token is saved in the **token** property that later can be obtained in the following path: _**session.content.secure.token**_ as shown in the custom authorizer below.
+> **Note**:  In the **authenticate** function, inside the function in the first **then** statement we are saving the token that comes in the **id_token** property of the response of the server, only when the promise is resolved successfully. The token is then saved in the **token** property that later can be obtained in the following path: _**session.content.secure.token**_ as shown in the custom authorizer below.
 
 ````JavaScript
 // app/authorizers/custom.js
