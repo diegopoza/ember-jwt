@@ -91,51 +91,50 @@ You can see our custom implementations below:
 // app/authenticators/custom.js
 import Ember from 'ember';
 import Base from 'simple-auth/authenticators/base';
-
 export default Base.extend({
-  tokenEndpoint: 'http://localhost:3001/sessions/create',
-  restore: function(data) {
-    return new Ember.RSVP.Promise(function (resolve, reject) {
-      if (!Ember.isEmpty(data.session_name)) {
-        resolve(data);
-      }
-      else {
-        reject();
-      }
-    });
-  },
-
-  authenticate: function(options) { 
-    var self = this;
-    return new Ember.RSVP.Promise(function(resolve, reject) { 
-    Ember.$.ajax({ 
-      url: self.tokenEndpoint, 
-      type: 'POST', 
-      data: JSON.stringify({
-          username: options.identification,
-          password: options.password
-      }),
-      contentType: 'application/json;charset=utf-8',
-      dataType: 'json' 
-    }).then(function(response) { 
-      Ember.run(function() { 
-        resolve({ token: response.id_token }); 
-      }); 
-    }, function(xhr, status, error) { 
-      var response = JSON.parse(xhr.responseText); 
-      Ember.run(function() { 
-        reject(response.error); 
-      }); 
-    }); 
-  }); 
-}, 
-
-  invalidate: function() {
-    console.log('invalidate...');
-    return Ember.RSVP.resolve();
-  }
+    tokenEndpoint: 'http://localhost:3001/sessions/create',
+    restore: function(data) {
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+            if (!Ember.isEmpty(data.session_name)) {
+                resolve(data);
+            } else {
+                reject();
+            }
+        });
+    },
+    authenticate: function(options) {
+        return new Ember.RSVP.Promise((resolve, reject) => {
+            Ember.$.ajax({
+                url: this.tokenEndpoint,
+                type: 'POST',
+                data: JSON.stringify({
+                    username: options.identification,
+                    password: options.password
+                }),
+                contentType: 'application/json;charset=utf-8',
+                dataType: 'json'
+            }).then(function(response) {
+                Ember.run(function() {
+                    resolve({
+                        token: response.id_token
+                    });
+                });
+            }, function(xhr, status, error) {
+                var response = xhr.responseText;
+                Ember.run(function() {
+                    reject(response);
+                });
+            });
+        });
+    },
+    invalidate: function() {
+        console.log('invalidate...');
+        return Ember.RSVP.resolve();
+    }
 });
 ````
+
+> **Note**:  In the **authenticate** function, inside the function in the first **then** statement we are saving the token that comes in the **id_token** property of the response of the server. The token is saved in the **token** property that later can be obtained in the following path: _**session.content.secure.token**_ as shown in the custom authorizer below.
 
 ````JavaScript
 // app/authorizers/custom.js
@@ -211,13 +210,12 @@ import Ember from 'ember';
 export default Ember.Component.extend({
     authenticator: 'authenticator:custom',
     actions: {
-        authenticate: function() { 
-             var self = this; 
-             var credentials = this.getProperties('identification', 'password'); 
-             this.get('session').authenticate('authenticator:custom', credentials).then(null, function(message) { 
-                self.set('errorMessage', message); 
-             }); 
-        } 
+        authenticate: function() {
+            var credentials = this.getProperties('identification', 'password');
+            this.get('session').authenticate('authenticator:custom', credentials).catch((message) => {
+                this.set('errorMessage', message);
+            });
+        }
     }
 });
 ````
