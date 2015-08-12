@@ -4,7 +4,7 @@ export default Base.extend({
     tokenEndpoint: 'http://localhost:3001/sessions/create',
     restore: function(data) {
         return new Ember.RSVP.Promise(function(resolve, reject) {
-            if (!Ember.isEmpty(data.session_name)) {
+            if (!Ember.isEmpty(data.token)) {
                 resolve(data);
             } else {
                 reject();
